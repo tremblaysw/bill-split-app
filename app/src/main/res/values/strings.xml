@@ -9,6 +9,7 @@
     <string name="required_fields">*required fields</string>
     <string name="method_details_title">Split Method Details</string>
     <string name="split_empty">This split doesn\'t do anything yet. Edit to add some functionality. </string>
-    <string name="duplicate_split_name">A split with that name already exists.</string>
+    <string name="duplicate_split_name_error">A split with that name already exists.</string>
+    <string name="create_split_failed_error">Failed to create split.</string>
     <string name="split_list_retrieval_error">Unable to retrieve list of splits.</string>
 </resources>

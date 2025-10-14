@@ -1,10 +1,13 @@
 package ca.tremblay95.billsplit.presentation.create_split
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -21,7 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ca.tremblay95.billsplit.R
 import ca.tremblay95.billsplit.domain.model.Split
@@ -55,13 +60,14 @@ fun CreateSplitScreen(
             )
         }
     ) { innerPadding ->
-        NewSplitMethodBody(
-            methodUiState = viewModel.uiState,
-            onMethodValueChange = viewModel::updateUiState,
+        CreateSplitBody(
+            uiState = viewModel.uiState,
+            onSplitValueChange = viewModel::updateUiState,
             onSaveClick = {
                 coroutineScope.launch {
-                    viewModel.saveSplitMethod()
-                    navigateBack()
+                    if (viewModel.saveSplitMethod()) {
+                        navigateBack()
+                    }
                 }
             },
             modifier = Modifier
@@ -77,9 +83,9 @@ fun CreateSplitScreen(
 }
 
 @Composable
-fun NewSplitMethodBody(
-    methodUiState : CreateSplitState,
-    onMethodValueChange : (Split) -> Unit,
+fun CreateSplitBody(
+    uiState : CreateSplitState,
+    onSplitValueChange : (Split) -> Unit,
     onSaveClick : () -> Unit,
     modifier : Modifier = Modifier
 ) {
@@ -87,14 +93,14 @@ fun NewSplitMethodBody(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_large)),
         modifier = modifier.padding(dimensionResource(R.dimen.padding_medium))
     ) {
-        MethodInputForm(
-            methodDetails = methodUiState.split,
-            onValueChange = onMethodValueChange,
+        CreateSplitInputForm(
+            split = uiState.split,
+            onValueChange = onSplitValueChange,
             modifier = Modifier.fillMaxWidth()
         )
         Button(
             onClick = onSaveClick,
-            enabled = methodUiState.isEntryValid,
+            enabled = uiState.isEntryValid,
             shape = MaterialTheme.shapes.small,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -104,20 +110,21 @@ fun NewSplitMethodBody(
 }
 
 @Composable
-fun MethodInputForm(
-    methodDetails : Split,
+fun CreateSplitInputForm(
+    split : Split,
     onValueChange : (Split) -> Unit = {},
+    @StringRes errorResource : Int? = null,
     enabled : Boolean = true,
-    modifier : Modifier
+    modifier : Modifier = Modifier
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
     ) {
         OutlinedTextField(
-            value = methodDetails.name,
+            value = split.name,
             onValueChange = {
-                onValueChange(methodDetails.copy(name = it))
+                onValueChange(split.copy(name = it))
             },
             label = {
                 Text(stringResource(R.string.name_required))
@@ -126,15 +133,32 @@ fun MethodInputForm(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                errorBorderColor = MaterialTheme.colorScheme.error,
+                errorContainerColor = MaterialTheme.colorScheme.errorContainer,
+                errorTextColor = MaterialTheme.colorScheme.onErrorContainer
             ),
             modifier = Modifier.fillMaxWidth(),
+            isError = errorResource != null,
             enabled = enabled,
             singleLine = true
         )
+        if (errorResource != null) {
+            Text(
+                text = stringResource(errorResource),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(
+                    start = dimensionResource(R.dimen.padding_medium),
+                )
+            )
+        }
+        else {
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_medium)))
+        }
         OutlinedTextField(
-            value = methodDetails.description,
+            value = split.description,
             onValueChange = {
-                onValueChange(methodDetails.copy(description = it))
+                onValueChange(split.copy(description = it))
             },
             label = {
                 Text(stringResource(R.string.description))
@@ -159,17 +183,35 @@ fun MethodInputForm(
 
 @Preview(showBackground = true)
 @Composable
-fun NewSplitMethodPreview() {
+fun CreateSplitPreview() {
     BillSplitAppTheme {
-        NewSplitMethodBody(
-            methodUiState = CreateSplitState(
+        CreateSplitBody(
+            uiState = CreateSplitState(
                 Split(
                     name = "Split Preview",
                     description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi porta dignissim quam vitae imperdiet. Mauris vestibulum quam ut neque venenatis, sed mattis odio gravida. Vivamus iaculis dictum tortor, accumsan mattis mauris fermentum sodales. Curabitur feugiat est id venenatis posuere. Cras eget hendrerit mauris, tempus semper quam. Fusce iaculis vehicula ex sit amet placerat."
                 )
             ),
-            onMethodValueChange = {},
+            onSplitValueChange = {},
             onSaveClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CreateSplitInputFormPreview()
+{
+    BillSplitAppTheme {
+        CreateSplitInputForm(
+            Split(name = "Split Preview",
+                description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi porta dignissim quam vitae imperdiet. Mauris vestibulum quam ut neque venenatis, sed mattis odio gravida. Vivamus iaculis dictum tortor, accumsan mattis mauris fermentum sodales. Curabitur feugiat est id venenatis posuere. Cras eget hendrerit mauris, tempus semper quam. Fusce iaculis vehicula ex sit amet placerat."
+            ),
+            {},
+            null,
+//            R.string.duplicate_split_name,
+            true,
+            Modifier.padding(10.dp)
         )
     }
 }

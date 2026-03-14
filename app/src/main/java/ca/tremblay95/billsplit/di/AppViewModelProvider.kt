@@ -8,7 +8,6 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import ca.tremblay95.billsplit.BillSplitApplication
 import ca.tremblay95.billsplit.presentation.create_split.CreateSplitViewModel
 import ca.tremblay95.billsplit.presentation.split_list.SplitListViewModel
-import ca.tremblay95.billsplit.presentation.split_details.SplitDetailsViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
@@ -20,14 +19,6 @@ object AppViewModelProvider {
         // Initializer for CreateSplitViewModel
         initializer {
             CreateSplitViewModel(application().appModule.splitUseCases.addSplit)
-        }
-
-        // Initializer for SplitMethodDetailsViewModel
-        initializer {
-            SplitDetailsViewModel(
-                this.createSavedStateHandle(),
-//                application().appModule.splitRepository
-            )
         }
     }
 }

@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             BillSplitAppTheme {
                 Surface(
-                    modifier = Modifier.Companion.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController : NavHostController = rememberNavController()

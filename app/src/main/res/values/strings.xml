@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Bill Split</string>
+    <string name="app_name">Divvy Up</string>
     <string name="back_button">Back</string>
     <string name="create_split_title">New Split</string>
     <string name="no_splits_description">You have no splits.\nTap + to create one.</string>
